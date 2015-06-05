@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Hello World</title>
+         <!--<link rel="stylesheet" type="text/css" href="/bootstrap.min.css" />-->
+  <link rel="stylesheet" type="text/css" href="/ourfirst.css" />
+    <link rel="stylesheet" type="text/css" href="/dc.css" />
+    </head>
+    <body>
+        <h1>Hello World</h1>
+        <p>
+            Testing Visualisation.
+        </p>
+        <div id="chart-line-hitsperday"></div>
+        <div id="chart-line-hitsperday2"></div>
+
+    </body>
+    
+
+      <script type="text/javascript" src="/d3.js"></script>
+            <script type="text/javascript" src="/dc.js"></script>
+       <script type="text/javascript" src="/crossfilter.js"></script>
+    
+      <script>
+      	
+var data = [
+			{date: "12/27/2012", page1: 2, page2: 190, page3: 100},
+			{date: "12/28/2012", page1: 2, page2: 10, page3: 100},
+			{date: "12/29/2012", page1: 1, page2: 300, page3: 200},
+			{date: "12/30/2012", page1: 2, page2: 90, page3: 0},
+			{date: "12/31/2012", page1: 2, page2: 90, page3: 0},
+			{date: "01/01/2013", page1: 2, page2: 90, page3: 0},
+			{date: "01/02/2013", page1: 1, page2: 10, page3: 1},
+			{date: "01/03/2013", page1: 2, page2: 90, page3: 0},
+			{date: "01/04/2013", page1: 2, page2: 90, page3: 0},
+			{date: "01/05/2013", page1: 2, page2: 90, page3: 0},
+			{date: "01/06/2013", page1: 2, page2: 200, page3: 1},
+			{date: "01/07/2013", page1: 1, page2: 200, page3: 100}
+			];
+
+
+var hitslineChart  = dc.lineChart("#chart-line-hitsperday");
+var ndx = crossfilter(data);
+
+
+data.forEach(function(d) {
+		d.date = Date.parse(d.date);
+		d.total= d.page1+d.page2+d.page3;
+	});
+var dateDim = ndx.dimension(function(d) {return d.date;});
+
+
+var hits = dateDim.group().reduceSum(function(d) {return d.total;});
+	var minDate = dateDim.bottom(1)[0].date;
+	var maxDate = dateDim.top(1)[0].date;
+
+	hitslineChart
+		.width(500).height(200)
+		.dimension(dateDim)
+		.group(hits)
+		.x(d3.time.scale().domain([minDate,maxDate]))
+		.yAxisLabel("Hits per day");
+		
+		
+		var hitslineChart2  = dc.lineChart("#chart-line-hitsperday2");
+var dateDim2 = ndx.dimension(function(d) {return d.date;});
+
+
+	hitslineChart2
+		.width(500).height(200)
+		.dimension(dateDim2)
+		.group(hits)
+		.x(d3.time.scale().domain([minDate,maxDate]))
+		.yAxisLabel("Hits per day");
+
+
+
+dc.renderAll();
+
+
+      </script>
+
+</html>
